@@ -1,0 +1,68 @@
+; HstWB Mini Package Install Script
+; ---------------------------------
+;
+; Author: Henrik Noerfjand Stengaard
+; Date: 2017-12-15
+;
+; This script extracts and installs zip archives for HstWB Mini Package. 
+
+
+echo "Installing HstWB Mini..."
+unzip -qq -o -x PACKAGEDIR:hstwb-mini.zip -d SYSTEMDIR:
+
+
+; Patch Fast File System v40.1 to v45.16
+SYSTEMDIR:C/gpatch >NIL: SYSTEMDIR:L/FastFileSystem SYSTEMDIR:L/FastFileSystem_45.16.gpch SYSTEMDIR:L/FastFileSystem_45.16
+Rename >NIL: SYSTEMDIR:L/FastFileSystem SYSTEMDIR:L/FastFileSystem_old
+Copy >NIL: SYSTEMDIR:L/FastFileSystem_45.16 SYSTEMDIR:L/FastFileSystem
+
+
+; Removing Workbench files
+echo "Removing Workbench files..."
+
+IF EXISTS SYSTEMDIR:Classes
+  Delete >NIL: SYSTEMDIR:Classes
+ENDIF
+;IF EXISTS SYSTEMDIR:Devs
+;  Delete >NIL: SYSTEMDIR:Devs
+;ENDIF
+;IF EXISTS SYSTEMDIR:Devs.info
+;  Delete >NIL: SYSTEMDIR:Devs.info
+;ENDIF
+IF EXISTS SYSTEMDIR:Expansion
+  Delete >NIL: SYSTEMDIR:Expansion
+ENDIF
+IF EXISTS SYSTEMDIR:Expansion.info
+  Delete >NIL: SYSTEMDIR:Expansion.info
+ENDIF
+IF EXISTS SYSTEMDIR:Rexxc
+  Delete >NIL: SYSTEMDIR:Rexxc
+ENDIF
+IF EXISTS SYSTEMDIR:System
+  Delete >NIL: SYSTEMDIR:System
+ENDIF
+IF EXISTS SYSTEMDIR:System.info
+  Delete >NIL: SYSTEMDIR:System.info
+ENDIF
+IF EXISTS SYSTEMDIR:Utilities
+  Delete >NIL: SYSTEMDIR:Utilities
+ENDIF
+IF EXISTS SYSTEMDIR:Utilities.info
+  Delete >NIL: SYSTEMDIR:Utilities.info
+ENDIF
+IF EXISTS SYSTEMDIR:WBStartup
+  Delete >NIL: SYSTEMDIR:WBStartup
+ENDIF
+IF EXISTS SYSTEMDIR:WBStartup.info
+  Delete >NIL: SYSTEMDIR:WBStartup.info
+ENDIF
+
+
+; Set DH0: device boot priority to 1 and automount
+SYSTEMDIR:C/changebootpri >NIL: DH0: 1 mount
+
+; Set DH1: device boot priority to 0 and disable automount, if DH1: device is present
+Assign >NIL: EXISTS DH1:
+IF $RC EQ 0 VAL
+  SYSTEMDIR:C/changebootpri >NIL: DH1: 0 nomount
+ENDIF

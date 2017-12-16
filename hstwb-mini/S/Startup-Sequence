@@ -1,0 +1,30 @@
+; Startup Sequence
+; ----------------
+;
+; Author: Henrik Noerfjand Stengaard
+; Date: 2017-12-15
+
+
+; Add alias
+Alias cls "Echo NOLINE *"*E[0;0H*E[J*" "  
+
+
+; Assign Startup
+IF EXISTS S:Assign-Startup
+  execute S:Assign-Startup
+ENDIF
+
+
+; Set fail and reduce buffers to mimimum
+FailAt 21
+C:AddBuffers >NIL: DF0: -999
+C:AddBuffers >NIL: DH0: -999
+
+
+; Start Amiga Boot Selector
+C:abs
+execute S:Boot.abs
+
+
+; End
+LAB end

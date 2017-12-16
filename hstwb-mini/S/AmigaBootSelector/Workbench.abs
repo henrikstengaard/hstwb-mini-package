@@ -1,0 +1,53 @@
+; Build mountlist
+set buildmountlist "0"
+IF EXISTS DEVS:Mountlist
+  Version >NIL: uaehf.device
+  IF FAIL
+    ; Set build mountlist to 1, if uaehf.device is not present and mountlist doesn't contain scsi.device
+    search DEVS:Mountlist "scsi.device" >NIL:
+    IF WARN
+      set buildmountlist "1"
+    ENDIF
+  ELSE
+    ; Set build mountlist to 1, if uaehf.device is present and mountlist doesn't contain uaehf.device
+    search DEVS:Mountlist "uaehf.device" >NIL:
+    IF WARN
+      set buildmountlist "1"
+    ENDIF
+  ENDIF
+ELSE
+  set buildmountlist "1"
+ENDIF
+
+; Build and patch mountlist, if build mountlist is 1
+IF $buildmountlist EQ "1" VAL
+  Version >NIL: uaehf.device
+  IF FAIL
+    GiggleDisk DEVICE=scsi.device TO=DEVS:Mountlist
+  ELSE
+    GiggleDisk DEVICE=uaehf.device TO=DEVS:Mountlist
+  ENDIF
+
+  ; Patch mountlist
+  copy >NIL: DEVS:Mountlist RAM:Mountlist
+  execute S:PatchMountlist RAM:Mountlist
+  copy >NIL: RAM:Mountlist DEVS:Mountlist
+ENDIF
+
+; End, if mountlist doesn't contain device DH1: 
+search DEVS:Mountlist "DH1:" >NIL:
+IF WARN
+  REQUESTCHOICE "Error" "Device DH1: doesn't exist!" "OK" >NIL:
+  SKIP end
+ENDIF
+
+; Mount and move system assigns to device DH1:
+mount DH1:
+movesys DH1:
+
+; execute startup sequence
+IF EXISTS S:Startup-Sequence
+  execute S:Startup-Sequence
+ELSE
+  REQUESTCHOICE "Error" "Workbench is not installed!" "OK" >NIL:
+ENDIF

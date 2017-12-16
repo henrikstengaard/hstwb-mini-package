@@ -1,0 +1,5 @@
+; Assign Startup
+; --------------
+
+Assign T: RAM:
+Assign ENV: RAM:
