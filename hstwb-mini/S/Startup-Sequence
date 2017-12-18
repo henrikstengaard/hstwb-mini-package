@@ -2,11 +2,20 @@
 ; ----------------
 ;
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2017-12-15
+; Date: 2017-12-17
 
 
 ; Add alias
 Alias cls "Echo NOLINE *"*E[0;0H*E[J*" "  
+
+
+; Run setpatch quiet, if setpatch is less than v44.13. Otherwise run setpatch noromupdate quiet
+Version >NIL: C:SetPatch 44 13 FILE
+IF WARN
+  C:SetPatch QUIET
+ELSE
+  C:SetPatch NOROMUPDATE QUIET
+ENDIF
 
 
 ; Assign Startup
@@ -19,6 +28,12 @@ ENDIF
 FailAt 21
 C:AddBuffers >NIL: DF0: -999
 C:AddBuffers >NIL: DH0: -999
+
+
+; Run add21k, if use add21k prefs exists
+IF EXISTS SYS:Prefs/HstWB/Use-Add21k
+  add21k
+ENDIF
 
 
 ; Start Amiga Boot Selector
