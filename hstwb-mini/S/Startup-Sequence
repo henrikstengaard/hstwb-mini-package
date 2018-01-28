@@ -2,19 +2,31 @@
 ; ----------------
 ;
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2017-12-17
+; Date: 2018-01-28
 
 
 ; Add alias
 Alias cls "Echo NOLINE *"*E[0;0H*E[J*" "  
 
 
-; Run setpatch quiet, if setpatch is less than v44.13. Otherwise run setpatch noromupdate quiet
-Version >NIL: C:SetPatch 44 13 FILE
-IF WARN
-  C:SetPatch QUIET
-ELSE
-  C:SetPatch NOROMUPDATE QUIET
+; Set fail at to 21
+FailAt 21
+
+
+; Run setpatch quiet, if setpatch exists. Use noromupdate, if version is equal or greater than v44.13
+IF EXISTS C:SetPatch
+  Version >NIL: C:SetPatch 44 13 FILE
+  IF WARN
+    C:SetPatch QUIET
+  ELSE
+    C:SetPatch NOROMUPDATE QUIET
+  ENDIF
+ENDIF
+
+
+; Run NoClick, if use noclick prefs exists
+IF EXISTS SYS:Prefs/HstWB/Use-NoClick
+  NoClick
 ENDIF
 
 
@@ -24,8 +36,7 @@ IF EXISTS S:Assign-Startup
 ENDIF
 
 
-; Set fail and reduce buffers to mimimum
-FailAt 21
+; Reduce buffers to mimimum
 C:AddBuffers >NIL: DF0: -999
 C:AddBuffers >NIL: DH0: -999
 
