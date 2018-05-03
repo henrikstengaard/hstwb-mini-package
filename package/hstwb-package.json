@@ -6,6 +6,10 @@
     [
         {
             "name": "SYSTEMDIR"
+        },
+        {
+            "name": "MINIDIR",
+            "path": "DH1:"
         }
     ]
 }

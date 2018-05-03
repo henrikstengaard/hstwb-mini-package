@@ -2,67 +2,71 @@
 ; ---------------------------------
 ;
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2017-12-15
+; Date: 2018-05-03
 ;
 ; This script extracts and installs zip archives for HstWB Mini Package. 
 
 
-echo "Installing HstWB Mini..."
-unzip -qq -o -x PACKAGEDIR:hstwb-mini.zip -d SYSTEMDIR:
+FailAt 21
 
+; Fail, if FastFileSystem doesn't exist
+IF EXISTS SYSTEMDIR:L/FastFileSystem
+  REQUESTCHOICE "Error" "FastFileSystem file 'SYSTEMDIR:L/FastFileSystem' doesn't exist!" "OK" >NIL:
+  SKIP end
+ENDIF
+
+; Fail, if FastFileSystem is less than v40.1
+Version >NIL: "SYSTEMDIR:L/FastFileSystem" 40 1 FILE
+IF WARN
+  REQUESTCHOICE "Error" "FastFileSystem file 'SYSTEMDIR:L/FastFileSystem' is not v40.1!" "OK" >NIL:
+  SKIP end
+ENDIF
+
+
+echo "Installing HstWB Mini..."
+unzip -qq -o -x PACKAGEDIR:hstwb-mini.zip -d MINIDIR:
+
+; Copying Workbench files
+echo "Copying Workbench files..."
+
+MakePath MINIDIR:C >NIL:
+Copy SYSTEMDIR:C MINIDIR:C ALL >NIL:
+
+MakePath MINIDIR:Devs >NIL:
+Copy SYSTEMDIR:Devs MINIDIR:Devs ALL >NIL:
+
+MakePath MINIDIR:L >NIL:
+Copy SYSTEMDIR:L MINIDIR:L ALL >NIL:
+
+MakePath MINIDIR:Libs >NIL:
+Copy SYSTEMDIR:Libs MINIDIR:Libs ALL >NIL:
+
+MakePath MINIDIR:Prefs >NIL:
+Copy SYSTEMDIR:Prefs MINIDIR:Prefs ALL >NIL:
+
+MakePath MINIDIR:S >NIL:
+Copy SYSTEMDIR:S MINIDIR:S ALL >NIL:
 
 ; Patch Fast File System v40.1 to v45.16
-SYSTEMDIR:C/gpatch >NIL: SYSTEMDIR:L/FastFileSystem SYSTEMDIR:L/FastFileSystem_45.16.gpch SYSTEMDIR:L/FastFileSystem_45.16
-Rename >NIL: SYSTEMDIR:L/FastFileSystem SYSTEMDIR:L/FastFileSystem_old
-Copy >NIL: SYSTEMDIR:L/FastFileSystem_45.16 SYSTEMDIR:L/FastFileSystem
+MINIDIR:C/gpatch MINIDIR:L/FastFileSystem MINIDIR:L/FastFileSystem_45.16.gpch MINIDIR:L/FastFileSystem_45.16 >NIL:
+Rename MINIDIR:L/FastFileSystem MINIDIR:L/FastFileSystem_old >NIL:
+Copy MINIDIR:L/FastFileSystem_45.16 MINIDIR:L/FastFileSystem >NIL:
 
-
-; Removing Workbench files
-echo "Removing Workbench files..."
-
-IF EXISTS SYSTEMDIR:Classes
-  Delete >NIL: SYSTEMDIR:Classes
-ENDIF
-;IF EXISTS SYSTEMDIR:Devs
-;  Delete >NIL: SYSTEMDIR:Devs
-;ENDIF
-;IF EXISTS SYSTEMDIR:Devs.info
-;  Delete >NIL: SYSTEMDIR:Devs.info
-;ENDIF
-IF EXISTS SYSTEMDIR:Expansion
-  Delete >NIL: SYSTEMDIR:Expansion
-ENDIF
-IF EXISTS SYSTEMDIR:Expansion.info
-  Delete >NIL: SYSTEMDIR:Expansion.info
-ENDIF
-IF EXISTS SYSTEMDIR:Rexxc
-  Delete >NIL: SYSTEMDIR:Rexxc
-ENDIF
-IF EXISTS SYSTEMDIR:System
-  Delete >NIL: SYSTEMDIR:System
-ENDIF
-IF EXISTS SYSTEMDIR:System.info
-  Delete >NIL: SYSTEMDIR:System.info
-ENDIF
-IF EXISTS SYSTEMDIR:Utilities
-  Delete >NIL: SYSTEMDIR:Utilities
-ENDIF
-IF EXISTS SYSTEMDIR:Utilities.info
-  Delete >NIL: SYSTEMDIR:Utilities.info
-ENDIF
-IF EXISTS SYSTEMDIR:WBStartup
-  Delete >NIL: SYSTEMDIR:WBStartup
-ENDIF
-IF EXISTS SYSTEMDIR:WBStartup.info
-  Delete >NIL: SYSTEMDIR:WBStartup.info
-ENDIF
-
-
-; Set DH0: device boot priority to 1 and automount
-SYSTEMDIR:C/changebootpri >NIL: DH0: 1 mount
-
-; Set DH1: device boot priority to 0 and disable automount, if DH1: device is present
-Assign >NIL: EXISTS DH1:
+; Set systemdir device boot priority to 0 and disable automount
+set devicename "`execute INSTALLDIR:S/GetDeviceName "$SYSTEMDIR"`"
+Assign >NIL: EXISTS $devicename
 IF $RC EQ 0 VAL
-  SYSTEMDIR:C/changebootpri >NIL: DH1: 0 nomount
+  MINIDIR:C/changebootpri >NIL: $devicename 0 nomount
 ENDIF
+
+; Set minidir device boot priority to 1 and automount
+set devicename "`execute INSTALLDIR:S/GetDeviceName "$MINIDIR"`"
+Assign >NIL: EXISTS $devicename
+IF $RC EQ 0 VAL
+  MINIDIR:C/changebootpri >NIL: $devicename 1 mount
+ENDIF
+
+
+; End
+; ---
+LAB end
