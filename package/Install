@@ -47,10 +47,14 @@ Copy SYSTEMDIR:Prefs MINIDIR:Prefs ALL >NIL:
 MakePath MINIDIR:S >NIL:
 Copy SYSTEMDIR:S MINIDIR:S ALL >NIL:
 
-; Patch Fast File System v40.1 to v45.16
-MINIDIR:C/gpatch MINIDIR:L/FastFileSystem MINIDIR:L/FastFileSystem_45.16.gpch MINIDIR:L/FastFileSystem_45.16 >NIL:
-Rename MINIDIR:L/FastFileSystem MINIDIR:L/FastFileSystem_old >NIL:
-Copy MINIDIR:L/FastFileSystem_45.16 MINIDIR:L/FastFileSystem >NIL:
+; Patch FastFileSystem v40.1 to v45.16, if it less than 45.16
+Version >NIL: "MINIDIR:L/FastFileSystem" 45 16 FILE
+IF WARN
+  echo "Patching FastFileSystem to v45.16..."
+  MINIDIR:C/gpatch MINIDIR:L/FastFileSystem MINIDIR:L/FastFileSystem_45.16.gpch MINIDIR:L/FastFileSystem_45.16 >NIL:
+  Rename MINIDIR:L/FastFileSystem MINIDIR:L/FastFileSystem_old >NIL:
+  Copy MINIDIR:L/FastFileSystem_45.16 MINIDIR:L/FastFileSystem >NIL:
+ENDIF
 
 ; Set systemdir device boot priority to 0 and disable automount
 set devicename "`execute INSTALLDIR:S/GetDeviceName "$SYSTEMDIR"`"
