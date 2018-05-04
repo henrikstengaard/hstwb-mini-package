@@ -64,7 +64,7 @@ ENDIF
 set devicename "`execute INSTALLDIR:S/GetDeviceName "$SYSTEMDIR"`"
 Assign >NIL: EXISTS $devicename
 IF $RC EQ 0 VAL
-  MINIDIR:C/changebootpri >NIL: $devicename 0 nomount
+  MINIDIR:C/changebootpri >NIL: $devicename 0 nomount boot
 ENDIF
 
 ; Set minidir device boot priority to 1 and automount
