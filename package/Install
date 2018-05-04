@@ -9,46 +9,64 @@
 
 FailAt 21
 
-; Fail, if FastFileSystem doesn't exist
-IF NOT EXISTS SYSTEMDIR:L/FastFileSystem
-  REQUESTCHOICE "Error" "FastFileSystem file 'SYSTEMDIR:L/FastFileSystem' doesn't exist!" "OK" >NIL:
-  SKIP end
-ENDIF
+; Copying Workbench files
+echo "Copying Workbench files..."
 
-; Fail, if FastFileSystem is less than v40.1
-Version >NIL: "SYSTEMDIR:L/FastFileSystem" 40 1 FILE
-IF WARN
-  REQUESTCHOICE "Error" "FastFileSystem file 'SYSTEMDIR:L/FastFileSystem' is not v40.1!" "OK" >NIL:
-  SKIP end
+IF NOT EXISTS MINIDIR:C
+  MakePath MINIDIR:C >NIL:
 ENDIF
+Copy SYSTEMDIR:C MINIDIR:C ALL >NIL:
+
+IF NOT EXISTS MINIDIR:Devs
+  MakePath MINIDIR:Devs >NIL:
+ENDIF
+Copy SYSTEMDIR:Devs MINIDIR:Devs ALL >NIL:
+
+IF NOT EXISTS MINIDIR:L
+  MakePath MINIDIR:L >NIL:
+ENDIF
+Copy SYSTEMDIR:L MINIDIR:L ALL >NIL:
+
+IF NOT EXISTS MINIDIR:Libs
+  MakePath MINIDIR:Libs >NIL:
+ENDIF
+Copy SYSTEMDIR:Libs MINIDIR:Libs ALL >NIL:
+
+IF NOT EXISTS MINIDIR:Prefs
+  MakePath MINIDIR:Prefs >NIL:
+ENDIF
+Copy SYSTEMDIR:Prefs MINIDIR:Prefs ALL >NIL:
+
+IF NOT EXISTS MINIDIR:S
+  MakePath MINIDIR:S >NIL:
+ENDIF
+Copy SYSTEMDIR:S MINIDIR:S ALL >NIL:
 
 
 echo "Installing HstWB Mini..."
 unzip -qq -o -x PACKAGEDIR:hstwb-mini.zip -d MINIDIR:
 
-; Copying Workbench files
-echo "Copying Workbench files..."
 
-MakePath MINIDIR:C >NIL:
-Copy SYSTEMDIR:C MINIDIR:C ALL >NIL:
+; patch fastfilesystem
+; --------------------
 
-MakePath MINIDIR:Devs >NIL:
-Copy SYSTEMDIR:Devs MINIDIR:Devs ALL >NIL:
+; warning, if fastfilesystem doesn't exist
+IF NOT EXISTS SYSTEMDIR:L/FastFileSystem
+  echo "Warning: FastFileSystem file 'SYSTEMDIR:L/FastFileSystem'"
+  echo "doesn't exist. Skip patching!"
+  SKIP changeboot
+ENDIF
 
-MakePath MINIDIR:L >NIL:
-Copy SYSTEMDIR:L MINIDIR:L ALL >NIL:
+; warning, if fastfilesystem is less than v40.1
+Version >NIL: "SYSTEMDIR:L/FastFileSystem" 40 1 FILE
+IF WARN
+  echo "Warning: FastFileSystem file 'SYSTEMDIR:L/FastFileSystem'"
+  echo "is not v40.1. Skip patching!"
+  SKIP changeboot
+ENDIF
 
-MakePath MINIDIR:Libs >NIL:
-Copy SYSTEMDIR:Libs MINIDIR:Libs ALL >NIL:
-
-MakePath MINIDIR:Prefs >NIL:
-Copy SYSTEMDIR:Prefs MINIDIR:Prefs ALL >NIL:
-
-MakePath MINIDIR:S >NIL:
-Copy SYSTEMDIR:S MINIDIR:S ALL >NIL:
-
-; Patch FastFileSystem v40.1 to v45.16, if it less than 45.16
-Version >NIL: "MINIDIR:L/FastFileSystem" 45 16 FILE
+; patch fastfilesystem v40.1 to v45.16, if it less than 45.16
+Version "MINIDIR:L/FastFileSystem" 45 16 FILE >NIL:
 IF WARN
   echo "Patching FastFileSystem to v45.16..."
   MINIDIR:C/gpatch MINIDIR:L/FastFileSystem MINIDIR:L/FastFileSystem_45.16.gpch MINIDIR:L/FastFileSystem_45.16 >NIL:
@@ -59,6 +77,11 @@ IF WARN
     echo "Error: Failed patching FastFileSystem to v45.16!"
   ENDIF
 ENDIF
+
+
+; Change boot priority
+; --------------------
+LAB changeboot
 
 ; Set systemdir device boot priority to 0 and disable automount
 set devicename "`execute INSTALLDIR:S/GetDeviceName "$SYSTEMDIR"`"
