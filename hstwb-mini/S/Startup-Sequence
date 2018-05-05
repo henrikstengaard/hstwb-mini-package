@@ -2,7 +2,7 @@
 ; ----------------
 ;
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2018-01-28
+; Date: 2018-05-05
 
 
 ; Add alias
@@ -38,7 +38,7 @@ ENDIF
 
 ; Reduce buffers to mimimum
 C:AddBuffers >NIL: DF0: -999
-C:AddBuffers >NIL: DH0: -999
+C:AddBuffers >NIL: SYS: -999
 
 
 ; Run add21k, if use add21k prefs exists
