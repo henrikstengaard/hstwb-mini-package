@@ -34,20 +34,22 @@ IF $buildmountlist EQ "1" VAL
   copy >NIL: RAM:Mountlist DEVS:Mountlist
 ENDIF
 
-; End, if mountlist doesn't contain device DH1: 
-search DEVS:Mountlist "DH1:" >NIL:
+; end, if mountlist doesn't contain device [$SystemDirDevice] 
+search DEVS:Mountlist "[$SystemDirDevice]" >NIL:
 IF WARN
-  REQUESTCHOICE "Error" "Device DH1: doesn't exist!" "OK" >NIL:
+  REQUESTCHOICE "Error" "Device [$SystemDirDevice] doesn't exist!" "OK" >NIL:
   SKIP end
 ENDIF
 
-; Mount and move system assigns to device DH1:
-mount DH1:
-movesys DH1:
+; mount and move system assigns to device [$SystemDirDevice]
+mount [$SystemDirDevice]
+movesys [$SystemDirDevice]
 
-; execute startup sequence
+; execute startup sequence, if it exists
 IF EXISTS S:Startup-Sequence
   execute S:Startup-Sequence
-ELSE
-  REQUESTCHOICE "Error" "Workbench is not installed!" "OK" >NIL:
 ENDIF
+
+
+; End
+LAB END

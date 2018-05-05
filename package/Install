@@ -2,7 +2,7 @@
 ; ---------------------------------
 ;
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2018-05-04
+; Date: 2018-05-05
 ;
 ; This script extracts and installs zip archives for HstWB Mini Package. 
 
@@ -57,24 +57,65 @@ IF NOT EXISTS SYSTEMDIR:L/FastFileSystem
   SKIP changeboot
 ENDIF
 
-; warning, if fastfilesystem is less than v40.1
-Version >NIL: "SYSTEMDIR:L/FastFileSystem" 40 1 FILE
-IF WARN
-  echo "Warning: FastFileSystem file 'SYSTEMDIR:L/FastFileSystem'"
-  echo "is not v40.1. Skip patching!"
+; skip, if fastfilesystem is already patched to v45.16
+Version "MINIDIR:L/FastFileSystem" 45 16 FILE >NIL:
+IF $RC EQ 0 VAL
+  echo "FastFileSystem file 'SYSTEMDIR:L/FastFileSystem' is already"
+  echo "patched to v45.16. Skip patching!"
   SKIP changeboot
 ENDIF
 
-; patch fastfilesystem v40.1 to v45.16, if it less than 45.16
-Version "MINIDIR:L/FastFileSystem" 45 16 FILE >NIL:
-IF WARN
-  echo "Patching FastFileSystem to v45.16..."
-  MINIDIR:C/gpatch MINIDIR:L/FastFileSystem MINIDIR:L/FastFileSystem_45.16.gpch MINIDIR:L/FastFileSystem_45.16 >NIL:
-  IF $RC EQ 0 VAL
-    Rename MINIDIR:L/FastFileSystem MINIDIR:L/FastFileSystem_old >NIL:
-    Copy MINIDIR:L/FastFileSystem_45.16 MINIDIR:L/FastFileSystem >NIL:
-  ELSE
-    echo "Error: Failed patching FastFileSystem to v45.16!"
+; patch fastfilesystem v44.5 to v45.16, if fastfilesystem is v44.5
+; (v44.5 present on BetterWB v4.0)
+Version "MINIDIR:L/FastFileSystem" 44 5 FILE >NIL:
+IF $RC EQ 0 VAL
+  Version "MINIDIR:L/FastFileSystem" 44 6 FILE >NIL:
+  IF WARN
+    echo "Patching FastFileSystem v44.5 to v45.16..."
+    MINIDIR:C/gpatch MINIDIR:L/FastFileSystem MINIDIR:L/FFS_44.05_45.16.gpch MINIDIR:L/FastFileSystem_45.16 >NIL:
+    IF $RC EQ 0 VAL
+      Rename MINIDIR:L/FastFileSystem MINIDIR:L/FastFileSystem_44.05 >NIL:
+      Copy MINIDIR:L/FastFileSystem_45.16 MINIDIR:L/FastFileSystem >NIL:
+    ELSE
+      echo "Error: Failed patching FastFileSystem v44.5 to v45.16!"
+    ENDIF
+    SKIP changeboot
+  ENDIF
+ENDIF
+
+; patch fastfilesystem v40.1 to v45.16, if fastfilesystem is v40.1
+; (v40.1 present on original Workbench 3.1 disks)
+Version "MINIDIR:L/FastFileSystem" 40 1 FILE >NIL:
+IF $RC EQ 0 VAL
+  Version "MINIDIR:L/FastFileSystem" 40 2 FILE >NIL:
+  IF WARN
+    echo "Patching FastFileSystem v40.1 to v45.16..."
+    MINIDIR:C/gpatch MINIDIR:L/FastFileSystem MINIDIR:L/FFS_40.01_45.16.gpch MINIDIR:L/FastFileSystem_45.16 >NIL:
+    IF $RC EQ 0 VAL
+      Rename MINIDIR:L/FastFileSystem MINIDIR:L/FastFileSystem_40.01 >NIL:
+      Copy MINIDIR:L/FastFileSystem_45.16 MINIDIR:L/FastFileSystem >NIL:
+    ELSE
+      echo "Error: Failed patching FastFileSystem v40.1 to v45.16!"
+    ENDIF
+    SKIP changeboot
+  ENDIF
+ENDIF
+
+; patch fastfilesystem v39.27 to v45.16, if fastfilesystem is v39.27
+; (v39.27 present on ClassicWB)
+Version "MINIDIR:L/FastFileSystem" 39 27 FILE >NIL:
+IF $RC EQ 0 VAL
+  Version "MINIDIR:L/FastFileSystem" 39 28 FILE >NIL:
+  IF WARN
+    echo "Patching FastFileSystem v39.27 to v45.16..."
+    MINIDIR:C/gpatch MINIDIR:L/FastFileSystem MINIDIR:L/FFS_39.27_45.16.gpch MINIDIR:L/FastFileSystem_45.16 >NIL:
+    IF $RC EQ 0 VAL
+      Rename MINIDIR:L/FastFileSystem MINIDIR:L/FastFileSystem_39.27 >NIL:
+      Copy MINIDIR:L/FastFileSystem_45.16 MINIDIR:L/FastFileSystem >NIL:
+    ELSE
+      echo "Error: Failed patching FastFileSystem v39.27 to v45.16!"
+    ENDIF
+    SKIP changeboot
   ENDIF
 ENDIF
 
@@ -83,19 +124,22 @@ ENDIF
 ; --------------------
 LAB changeboot
 
-; Set systemdir device boot priority to 0 and disable automount
-set devicename "`execute INSTALLDIR:S/GetDeviceName "$SYSTEMDIR"`"
-Assign >NIL: EXISTS $devicename
+; set systemdir device boot priority to 0 and disable automount
+set systemdirdevice "`execute INSTALLDIR:S/GetDeviceName "$SYSTEMDIR"`"
+Assign >NIL: EXISTS $systemdirdevice
 IF $RC EQ 0 VAL
-  MINIDIR:C/changebootpri >NIL: $devicename 0 nomount boot
+  MINIDIR:C/changebootpri >NIL: $systemdirdevice 0 nomount boot
 ENDIF
 
-; Set minidir device boot priority to 1 and automount
-set devicename "`execute INSTALLDIR:S/GetDeviceName "$MINIDIR"`"
-Assign >NIL: EXISTS $devicename
+; set minidir device boot priority to 1 and automount
+set minidirdevice "`execute INSTALLDIR:S/GetDeviceName "$MINIDIR"`"
+Assign >NIL: EXISTS $minidirdevice
 IF $RC EQ 0 VAL
-  MINIDIR:C/changebootpri >NIL: $devicename 1 mount boot
+  MINIDIR:C/changebootpri >NIL: $minidirdevice 1 mount boot
 ENDIF
+
+; replace systemdir device placeholder for hstwb mini amiga boot selector workbench option
+rep MINIDIR:S/AmigaBootSelector/Workbench.abs "[*$SystemDirDevice]" "$systemdirdevice"
 
 
 ; End
