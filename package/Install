@@ -141,6 +141,25 @@ ENDIF
 ; replace systemdir device placeholder for hstwb mini amiga boot selector workbench option
 rep MINIDIR:S/AmigaBootSelector/Workbench.abs "[*$SystemDirDevice]" "$systemdirdevice"
 
+; disable systemdir scsi.device, if it exists
+IF EXISTS SYSTEMDIR:Devs/scsi.device
+  Rename SYSTEMDIR:Devs/scsi.device SYSTEMDIR:Devs/scsi.device_disabled >NIL:
+ENDIF
+
+; delete systemdir load icon.library prefs, if it exists
+IF EXISTS SYSTEMDIR:Prefs/HstWB/Load-IconLibrary
+  Delete SYSTEMDIR:Prefs/HstWB/Load-IconLibrary >NIL:
+ENDIF
+
+; delete systemdir load scsi.device prefs, if it exists
+IF EXISTS SYSTEMDIR:Prefs/HstWB/Load-ScsiDevice
+  Delete SYSTEMDIR:Prefs/HstWB/Load-ScsiDevice >NIL:
+ENDIF
+
+; delete systemdir start abs prefs, if it exists
+IF EXISTS SYSTEMDIR:Prefs/HstWB/Start-ABS
+  Delete SYSTEMDIR:Prefs/HstWB/Start-ABS >NIL:
+ENDIF
 
 ; End
 ; ---
