@@ -1,6 +1,11 @@
 {
+    "selectionIds":
+    [
+        "hstwb",
+        "amigaos"
+    ],
     "name": "HstWB Mini",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "priority": 1,
     "assigns":
     [
