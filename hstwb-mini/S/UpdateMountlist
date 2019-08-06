@@ -1,0 +1,87 @@
+.KEY device/a
+.BRA {
+.KET }
+
+; Update Mountlist
+; ----------------
+; Author: Henrik Noerfjand Stengaard
+; Date: 2019-08-06
+;
+; This script update mountlist to use either uaehf.device or scsi.device.
+
+
+; check if uaehf.device is present (uae emulator)
+Version >NIL: uaehf.device
+IF $RC EQ 0 VAL
+  ; build mountlist for uaehf.device 
+  GiggleDisk DEVICE=uaehf.device TO=RAM:_TempMountlist >NIL:
+  IF $RC EQ 0 VAL
+    ; skip to build mountlist, if mountlist doesn't exist
+    IF NOT EXISTS DEVS:Mountlist
+      SKIP buildmountlist
+    ENDIF
+
+    ; skip to build mountlist, if mountlist doesn't contain uaehf.device
+    search DEVS:Mountlist "uaehf.device" >NIL:
+    IF NOT $RC EQ 0 VAL
+      SKIP buildmountlist
+    ENDIF
+  ENDIF
+ENDIF
+
+; build mountlist for scsi.device 
+GiggleDisk DEVICE=scsi.device TO=RAM:_TempMountlist >NIL:
+IF $RC EQ 0 VAL
+  ; skip to build mountlist, if mountlist doesn't exist
+  IF NOT EXISTS DEVS:Mountlist
+    SKIP buildmountlist
+  ENDIF
+
+  ; skip to build mountlist, if mountlist doesn't contain scsi.device
+  search DEVS:Mountlist "scsi.device" >NIL:
+  IF NOT $RC EQ 0 VAL
+    SKIP buildmountlist
+  ENDIF
+ENDIF
+
+SKIP end
+
+
+; build mountlist
+; ---------------
+LAB buildmountlist
+
+IF NOT EXISTS RAM:_TempMountlist
+  SKIP end
+ENDIF
+
+; patch mountlist
+execute S:PatchMountlist RAM:_TempMountlist
+copy >NIL: RAM:_TempMountlist DEVS:Mountlist
+
+
+; validate
+; --------
+LAB validate
+
+; skip to end, if mountlist doesn't exist
+IF NOT EXISTS DEVS:Mountlist
+  echo "*e[1mError: DEVS:Mountlist doesn't exist!*e[0m" 
+  quit 20
+ENDIF
+
+; skip to end, if mountlist doesn't contain device
+search DEVS:Mountlist "{device}" >NIL:
+IF NOT $RC EQ 0 VAL
+  echo "*e[1mError: DEVS:Mountlist doesn't contain device '{device}'!*e[0m"
+  quit 20
+ENDIF
+
+
+; end
+; ---
+LAB end
+
+IF EXISTS RAM:_TempMountlist
+  Delete >NIL: RAM:_TempMountlist
+ENDIF
