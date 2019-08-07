@@ -64,11 +64,11 @@ unzip -qq -o -x PACKAGEDIR:hstwb-mini.zip -d MINIDIR:
 ; patch, if amiga os 3.1.4 is installed
 IF "$amigaosversion" EQ "3.1.4"
   ; copy startup-sequence for amiga os 3.1.4
-  Copy >NIL: PACKAGEDIR:Startup-Sequence.3.1.4 SYSTEMDIR:S/Startup-Sequence    
+  Copy >NIL: PACKAGEDIR:Startup-Sequence.3.1.4 MINIDIR:S/Startup-Sequence    
 
   ; install patch amiga os 3.1.4.1, if it exists
   IF EXISTS "SYSTEMDIR:S/Install-Patch-Amiga-OS-3141"
-    Execute "SYSTEMDIR:S/Install-Patch-Amiga-OS-3141" SYS SYSTEMDIR QUIET
+    Execute "SYSTEMDIR:S/Install-Patch-Amiga-OS-3141" SYS MINIDIR QUIET
   ENDIF
 
   ; skip to change boot. amiga os 3.1.4 comes with an updated fastfilesystem
@@ -167,8 +167,9 @@ IF $RC EQ 0 VAL
   MINIDIR:C/changebootpri >NIL: $minidirdevice 1 mount boot
 ENDIF
 
-; replace systemdir device placeholder for hstwb mini amiga boot selector workbench option
+; replace systemdir device placeholder
 rep MINIDIR:S/AmigaBootSelector/Workbench.abs "[*$SystemDirDevice]" "$systemdirdevice"
+rep MINIDIR:S/AmigaBootSelector/DirOpus4.abs "[*$SystemDirDevice]" "$systemdirdevice"
 
 ; delete systemdir load icon.library prefs, if it exists
 IF EXISTS SYSTEMDIR:Prefs/HstWB/Load-IconLibrary
@@ -179,6 +180,12 @@ ENDIF
 IF EXISTS SYSTEMDIR:Prefs/HstWB/Start-ABS
   Delete SYSTEMDIR:Prefs/HstWB/Start-ABS >NIL:
 ENDIF
+
+; replace systemdir assign with minidir
+Assign SYSTEMDIR: "$SYSTEMDIR" REMOVE
+Assign SYSTEMDIR: "$MINIDIR"
+setenv SYSTEMDIR "$MINIDIR"
+
 
 ; End
 ; ---
