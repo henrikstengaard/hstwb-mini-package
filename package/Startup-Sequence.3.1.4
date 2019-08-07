@@ -8,7 +8,6 @@
 ; add alias
 Alias cls "Echo NOLINE *"*E[0;0H*E[J*" "  
 
-
 ; set failat to 21
 FailAt 21
 
@@ -30,35 +29,29 @@ If Exists C:LoadModule
   ENDIF
 EndIf
 
-
 C:SetPatch QUIET
 C:CPU CHECKINSTALL 
 
-
-; Run NoClick, if use noclick prefs exists
+; run NoClick, if use noclick prefs exists
 IF EXISTS SYS:Prefs/HstWB/Use-NoClick
   NoClick
 ENDIF
 
-
-; Assign Startup
+; run assign Startup
 IF EXISTS S:Assign-Startup
   execute S:Assign-Startup
 ENDIF
 
-
-; Reduce buffers to mimimum
+; reduce buffers to mimimum
 C:AddBuffers >NIL: DF0: -999
 C:AddBuffers >NIL: SYS: -999
 
-
-; Run add21k, if use add21k prefs exists
+; run add21k, if use add21k prefs exists
 IF EXISTS SYS:Prefs/HstWB/Use-Add21k
   add21k
 ENDIF
 
-
-; Start Amiga Boot Selector
+; start amiga boot selector
 C:abs
 execute S:Boot.abs
 

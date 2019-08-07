@@ -8,7 +8,6 @@
 ; add alias
 Alias cls "Echo NOLINE *"*E[0;0H*E[J*" "  
 
-
 ; set fail at to 21
 FailAt 21
 
@@ -23,8 +22,7 @@ IF EXISTS SYS:Prefs/HstWB/Load-ScsiDevice
   ENDIF
 ENDIF
 
-
-; Run setpatch quiet, if setpatch exists. Use noromupdate, if version is equal or greater than v44.13
+; run setpatch quiet, if setpatch exists. Use noromupdate, if version is equal or greater than v44.13
 IF EXISTS C:SetPatch
   Version >NIL: C:SetPatch 44 13 FILE
   IF WARN
@@ -35,33 +33,29 @@ IF EXISTS C:SetPatch
 ENDIF
 
 
-; Run NoClick, if use noclick prefs exists
+; run noclick, if use noclick prefs exists
 IF EXISTS SYS:Prefs/HstWB/Use-NoClick
   NoClick
 ENDIF
 
-
-; Assign Startup
+; run assign Startup
 IF EXISTS S:Assign-Startup
   execute S:Assign-Startup
 ENDIF
 
-
-; Reduce buffers to mimimum
+; reduce buffers to mimimum
 C:AddBuffers >NIL: DF0: -999
 C:AddBuffers >NIL: SYS: -999
 
-
-; Run add21k, if use add21k prefs exists
+; run add21k, if use add21k prefs exists
 IF EXISTS SYS:Prefs/HstWB/Use-Add21k
   add21k
 ENDIF
 
-
-; Start Amiga Boot Selector
+; start amiga boot selector
 C:abs
 execute S:Boot.abs
 
 
-; End
+; end
 LAB end
