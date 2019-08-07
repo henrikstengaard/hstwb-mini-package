@@ -5,10 +5,13 @@
 ; Update Mountlist
 ; ----------------
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2019-08-06
+; Date: 2019-08-07
 ;
 ; This script update mountlist to use either uaehf.device or scsi.device.
 
+
+; set fail at to 21
+FailAt 21
 
 ; check if uaehf.device is present (uae emulator)
 Version >NIL: uaehf.device
