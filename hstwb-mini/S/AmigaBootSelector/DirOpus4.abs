@@ -1,3 +1,12 @@
+; update mountlist for systemdir device
+Execute S:UpdateMountlist [$SystemDirDevice]
+
+; mount systemdir device [$SystemDirDevice]
+mount [$SystemDirDevice]
+
+; mount compact flash device
+mount CF0: from Devs:Mountlist-CF
+
 Assign >NIL: DOPUS: SYS:Programs/DirOpus4
 Assign >NIL: C: DOPUS:C ADD
 Assign >NIL: Libs: DOPUS:Libs ADD
