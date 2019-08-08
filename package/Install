@@ -2,9 +2,41 @@
 ; ---------------------------------
 ;
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2019-08-06
+; Date: 2019-08-08
 ;
 ; This script extracts and installs zip archives for HstWB Mini Package. 
+
+
+; copy readme and screenshots to locale help for HstWB Mini
+IF NOT EXISTS SYSTEMDIR:Locale/Help/HstWB-Mini
+  makepath >NIL: SYSTEMDIR:Locale/Help/HstWB-Mini
+  IF EXISTS SYSTEMDIR:Prefs/Env-Archive/Sys/def_drawer.info
+    makeicon >NIL: SYSTEMDIR:Locale/Help/HstWB-Mini FROM SYSTEMDIR:Prefs/Env-Archive/Sys/def_drawer.info 
+  ELSE
+    makeicon >NIL: SYSTEMDIR:Locale/Help/HstWB-Mini
+  ENDIF
+ENDIF
+IF NOT EXISTS SYSTEMDIR:Locale/Help.info
+  IF EXISTS SYSTEMDIR:Prefs/Env-Archive/Sys/def_drawer.info
+    makeicon >NIL: SYSTEMDIR:Locale/Help FROM SYSTEMDIR:Prefs/Env-Archive/Sys/def_drawer.info 
+  ELSE
+    makeicon >NIL: SYSTEMDIR:Locale/Help
+  ENDIF
+ENDIF
+IF NOT EXISTS SYSTEMDIR:Locale.info
+  IF EXISTS SYSTEMDIR:Prefs/Env-Archive/Sys/def_drawer.info
+    makeicon >NIL: SYSTEMDIR:Locale FROM SYSTEMDIR:Prefs/Env-Archive/Sys/def_drawer.info 
+  ELSE
+    makeicon >NIL: SYSTEMDIR:Locale
+  ENDIF
+ENDIF
+copy >NIL: PACKAGEDIR:README SYSTEMDIR:Locale/Help/HstWB-Mini
+copy >NIL: PACKAGEDIR:README.guide SYSTEMDIR:Locale/Help/HstWB-Mini
+copy >NIL: PACKAGEDIR:README.info SYSTEMDIR:Locale/Help/HstWB-Mini
+IF NOT EXISTS SYSTEMDIR:Locale/Help/HstWB-Mini/screenshots
+  makepath >NIL: SYSTEMDIR:Locale/Help/HstWB-Mini/screenshots
+ENDIF
+copy >NIL: PACKAGEDIR:screenshots/#?.iff SYSTEMDIR:Locale/Help/HstWB-Mini/screenshots
 
 
 ; detect amiga os version
@@ -26,6 +58,10 @@ ENDIF
 
 ; copying amiga os files
 echo "Copying Amiga OS files..."
+
+IF EXISTS SYSTEMDIR:Disk.info
+  Copy SYSTEMDIR:Disk.info MINIDIR:Disk.info >NIL:
+ENDIF
 
 IF NOT EXISTS MINIDIR:C
   MakePath MINIDIR:C >NIL:
@@ -71,7 +107,7 @@ IF "$amigaosversion" EQ "3.1.4"
     Execute "SYSTEMDIR:S/Install-Patch-Amiga-OS-3141" SYS MINIDIR QUIET
   ENDIF
 
-  ; skip to change boot. amiga os 3.1.4 comes with an updated fastfilesystem
+  ; skip to change boot. amiga os 3.1.4 comes with fastfilesystem v46.20, so patch fastfilesystem is not required
   SKIP changeboot
 ENDIF
 
