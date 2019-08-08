@@ -67,3 +67,21 @@ Amiga Boot Selector can be changed by pressing F1. This allows changing existing
 Screenshots of HstWB Mini.
 
 ![HstWB Mini 1](screenshots/hstwb-mini_1.png?raw=true)
+
+![HstWB Mini 2](screenshots/hstwb-mini_2.png?raw=true)
+
+![HstWB Mini 3](screenshots/hstwb-mini_3.png?raw=true)
+
+![HstWB Mini 4](screenshots/hstwb-mini_4.png?raw=true)
+
+![HstWB Mini 5](screenshots/hstwb-mini_5.png?raw=true)
+
+![HstWB Mini 6](screenshots/hstwb-mini_6.png?raw=true)
+
+![HstWB Mini 7](screenshots/hstwb-mini_7.png?raw=true)
+
+![HstWB Mini 8](screenshots/hstwb-mini_8.png?raw=true)
+
+![HstWB Mini 9](screenshots/hstwb-mini_9.png?raw=true)
+
+![HstWB Mini 10](screenshots/hstwb-mini_10.png?raw=true)
