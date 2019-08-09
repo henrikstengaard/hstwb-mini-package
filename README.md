@@ -21,8 +21,6 @@ HstWB Mini package contains following features:
 
 HstWB Mini package can be installed on any Amiga with Amiga OS 3.1 or 3.1.4 about 3MB free space on a harddrive for installation. 
 
-Installing HstWB Mini package using either HstWB Installer install mode or running a self install image requires BetterWB package is installed, when selecting packages to install.
-
 ## Installation
 
 HstWB Mini package can be installed using one of the self install images available at https://hstwb.firstrealize.com (recommended) or using install or build self install mode in HstWB Installer (for advanced users).
