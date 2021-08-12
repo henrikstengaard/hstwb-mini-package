@@ -2,7 +2,7 @@
 ; ---------------------------------
 ;
 ; Author: Henrik Noerfjand Stengaard
-; Date: 2019-08-08
+; Date: 2020-06-15
 ;
 ; This script extracts and installs zip archives for HstWB Mini Package. 
 
@@ -63,52 +63,21 @@ IF EXISTS SYSTEMDIR:Disk.info
   Copy SYSTEMDIR:Disk.info MINIDIR:Disk.info >NIL:
 ENDIF
 
-IF NOT EXISTS MINIDIR:C
-  MakePath MINIDIR:C >NIL:
-ENDIF
-Copy SYSTEMDIR:C MINIDIR:C ALL >NIL:
-
-IF NOT EXISTS MINIDIR:Devs
-  MakePath MINIDIR:Devs >NIL:
-ENDIF
-Copy SYSTEMDIR:Devs MINIDIR:Devs ALL >NIL:
-
-IF NOT EXISTS MINIDIR:L
-  MakePath MINIDIR:L >NIL:
-ENDIF
-Copy SYSTEMDIR:L MINIDIR:L ALL >NIL:
-
-IF NOT EXISTS MINIDIR:Libs
-  MakePath MINIDIR:Libs >NIL:
-ENDIF
-Copy SYSTEMDIR:Libs MINIDIR:Libs ALL >NIL:
-
-IF NOT EXISTS MINIDIR:Prefs
-  MakePath MINIDIR:Prefs >NIL:
-ENDIF
-Copy SYSTEMDIR:Prefs MINIDIR:Prefs ALL >NIL:
-
-IF NOT EXISTS MINIDIR:S
-  MakePath MINIDIR:S >NIL:
-ENDIF
-Copy SYSTEMDIR:S MINIDIR:S ALL >NIL:
-
-
 echo "Installing HstWB Mini..."
-unzip -qq -o -x PACKAGEDIR:hstwb-mini.zip -d MINIDIR:
+unzip -qq -o -x PACKAGEDIR:hstwb-mini.zip -d SYSTEMDIR:
 
 ; patch, if amiga os 3.1.4 is installed
 IF "$amigaosversion" EQ "3.1.4"
   ; copy startup-sequence for amiga os 3.1.4
-  Copy >NIL: PACKAGEDIR:Startup-Sequence.3.1.4 MINIDIR:S/Startup-Sequence    
+  Copy >NIL: PACKAGEDIR:Startup-Sequence.3.1.4 SYSTEMDIR:S/Startup-Sequence    
 
   ; install patch amiga os 3.1.4.1, if it exists
   IF EXISTS "SYSTEMDIR:S/Install-Patch-Amiga-OS-3141"
-    Execute "SYSTEMDIR:S/Install-Patch-Amiga-OS-3141" SYS MINIDIR QUIET
+    Execute "SYSTEMDIR:S/Install-Patch-Amiga-OS-3141" SYS SYSTEMDIR QUIET
   ENDIF
 
   ; skip to change boot. amiga os 3.1.4 comes with fastfilesystem v46.20, so patch fastfilesystem is not required
-  SKIP changeboot
+  SKIP end
 ENDIF
 
 
@@ -119,7 +88,7 @@ ENDIF
 IF NOT EXISTS SYSTEMDIR:L/FastFileSystem
   echo "Warning: FastFileSystem file 'SYSTEMDIR:L/FastFileSystem'"
   echo "doesn't exist. Skip patching!"
-  SKIP changeboot
+  SKIP end
 ENDIF
 
 ; skip, if fastfilesystem is already patched to v45.16
@@ -127,7 +96,7 @@ Version "MINIDIR:L/FastFileSystem" 45 16 FILE >NIL:
 IF $RC EQ 0 VAL
   echo "FastFileSystem file 'SYSTEMDIR:L/FastFileSystem' is already"
   echo "patched to v45.16. Skip patching!"
-  SKIP changeboot
+  SKIP end
 ENDIF
 
 ; patch fastfilesystem v44.5 to v45.16, if fastfilesystem is v44.5
@@ -144,7 +113,7 @@ IF $RC EQ 0 VAL
     ELSE
       echo "Error: Failed patching FastFileSystem v44.5 to v45.16!"
     ENDIF
-    SKIP changeboot
+    SKIP end
   ENDIF
 ENDIF
 
@@ -162,7 +131,7 @@ IF $RC EQ 0 VAL
     ELSE
       echo "Error: Failed patching FastFileSystem v40.1 to v45.16!"
     ENDIF
-    SKIP changeboot
+    SKIP end
   ENDIF
 ENDIF
 
@@ -180,47 +149,47 @@ IF $RC EQ 0 VAL
     ELSE
       echo "Error: Failed patching FastFileSystem v39.27 to v45.16!"
     ENDIF
-    SKIP changeboot
+    SKIP end
   ENDIF
 ENDIF
 
 
 ; Change boot priority
 ; --------------------
-LAB changeboot
+;LAB changeboot
 
 ; set systemdir device boot priority to 0 and disable automount
-set systemdirdevice "`execute INSTALLDIR:S/GetDeviceName "$SYSTEMDIR"`"
-Assign >NIL: EXISTS $systemdirdevice
-IF $RC EQ 0 VAL
-  MINIDIR:C/changebootpri >NIL: $systemdirdevice 0 nomount boot
-ENDIF
+;set systemdirdevice "`execute INSTALLDIR:S/GetDeviceName "$SYSTEMDIR"`"
+;Assign >NIL: EXISTS $systemdirdevice
+;IF $RC EQ 0 VAL
+;  MINIDIR:C/changebootpri >NIL: $systemdirdevice 0 nomount boot
+;ENDIF
 
 ; set minidir device boot priority to 1 and automount
-set minidirdevice "`execute INSTALLDIR:S/GetDeviceName "$MINIDIR"`"
-Assign >NIL: EXISTS $minidirdevice
-IF $RC EQ 0 VAL
-  MINIDIR:C/changebootpri >NIL: $minidirdevice 1 mount boot
-ENDIF
+;set minidirdevice "`execute INSTALLDIR:S/GetDeviceName "$MINIDIR"`"
+;Assign >NIL: EXISTS $minidirdevice
+;IF $RC EQ 0 VAL
+;  MINIDIR:C/changebootpri >NIL: $minidirdevice 1 mount boot
+;ENDIF
 
 ; replace systemdir device placeholder
-rep MINIDIR:S/AmigaBootSelector/Workbench.abs "[*$SystemDirDevice]" "$systemdirdevice"
-rep MINIDIR:S/AmigaBootSelector/DirOpus4.abs "[*$SystemDirDevice]" "$systemdirdevice"
+;rep MINIDIR:S/AmigaBootSelector/Workbench.abs "[*$SystemDirDevice]" "$systemdirdevice"
+;rep MINIDIR:S/AmigaBootSelector/DirOpus4.abs "[*$SystemDirDevice]" "$systemdirdevice"
 
 ; delete systemdir load icon.library prefs, if it exists
-IF EXISTS SYSTEMDIR:Prefs/HstWB/Load-IconLibrary
-  Delete SYSTEMDIR:Prefs/HstWB/Load-IconLibrary >NIL:
-ENDIF
+;IF EXISTS SYSTEMDIR:Prefs/HstWB/Load-IconLibrary
+;  Delete SYSTEMDIR:Prefs/HstWB/Load-IconLibrary >NIL:
+;ENDIF
 
 ; delete systemdir start abs prefs, if it exists
-IF EXISTS SYSTEMDIR:Prefs/HstWB/Start-ABS
-  Delete SYSTEMDIR:Prefs/HstWB/Start-ABS >NIL:
-ENDIF
+;IF EXISTS SYSTEMDIR:Prefs/HstWB/Start-ABS
+;  Delete SYSTEMDIR:Prefs/HstWB/Start-ABS >NIL:
+;ENDIF
 
 ; replace systemdir assign with minidir
-Assign SYSTEMDIR: "$SYSTEMDIR" REMOVE
-Assign SYSTEMDIR: "$MINIDIR"
-setenv SYSTEMDIR "$MINIDIR"
+;Assign SYSTEMDIR: "$SYSTEMDIR" REMOVE
+;Assign SYSTEMDIR: "$MINIDIR"
+;setenv SYSTEMDIR "$MINIDIR"
 
 
 ; End
