@@ -9,17 +9,18 @@ It's tailored for harddrive images using FastFileSystem filesystem, but works fi
 HstWB Mini package contains following features:
 
 - Minimalistic startup sequence for maximum chip available.
-- Disables automount for systemdir DH0: and sets minidir DH1: bootable with higher boot priority. The reason for this is to have only one partition mounted for minimum amount of chip ram usage.
 - Boot selectors for starting AGS2 Games and Demos menus, HST Games and Demos menus, DirOpus4, Workbench or CLI.
 - Programs installed: DirOpus.
-- Added support for Amiga OS 3.1.4:
-  - Added LoadModule ROMUPDATE to support Kickstart 3.1 being patched to 3.1.4.
-  - Added version checking of DEVS:scsi.device, so it only will be loaded if scsi.device in memory/resident is less than v43.45.
-  - Added install patch Amiga OS 3.1.4.1, if Amiga OS 3.1.4.1 update is installed.
+
+Installation makes following changes:
+
+- Creates backup of startup sequence as "S:Startup-Sequence.BAK".
+- Creates backup of user startup as "S:User-Startup.BAK".
+- Patch startup sequence and user startup with HstWB changes for best Amiga OS compatibility with existing and future versions.
 
 ## Requirements
 
-HstWB Mini package can be installed on any Amiga with Amiga OS 3.1 or 3.1.4 about 3MB free space on a harddrive for installation. 
+HstWB Mini package can be installed on any Amiga with Amiga OS 3.2, 3.1.4 or 3.1 about 3MB free space on a harddrive for installation. 
 
 ## Installation
 
@@ -36,9 +37,8 @@ Then it's ready to be installed using using install or build self install mode i
 Installation of HstWB Mini package requires and uses following assign and default value:
 
 - SYSTEMDIR: = DH0:
-- MINIDIR: = DH1:
 
-HstWB Mini files will be installed and configured in MINIDIR: assign. SYSTEMDIR: assign must be set to harddrive containing Amiga OS.
+HstWB Mini files will be installed and configured in SYSTEMDIR: assign, which must be set to harddrive containing Workbench.
 
 ### Amiga Boot Selector
 
@@ -80,6 +80,8 @@ Screenshots of HstWB Mini.
 
 ![HstWB Mini 8](screenshots/hstwb-mini_8.png?raw=true)
 
-![HstWB Mini 9](screenshots/hstwb-mini_9.png?raw=true)
+![HstWB Mini Amiga OS 3.2](screenshots/hstwb-mini_3.2_1.png?raw=true)
 
-![HstWB Mini 10](screenshots/hstwb-mini_10.png?raw=true)
+![HstWB Mini Amiga OS 3.1.4](screenshots/hstwb-mini_3.1.4_1.png?raw=true)
+
+![HstWB Mini Amiga OS 3.1](screenshots/hstwb-mini_3.1_1.png?raw=true)

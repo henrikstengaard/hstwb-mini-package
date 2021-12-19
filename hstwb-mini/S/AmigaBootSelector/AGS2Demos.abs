@@ -1,3 +1,8 @@
+; Amiga Boot Selector - AGS2Demos
+; -------------------------------
+; Author: Henrik Noerfjand Stengaard
+; Date:   2021-11-25
+
 IF EXISTS S:AGS2Menu
   execute S:AGS2Menu "AGS2Demos"
 ELSE

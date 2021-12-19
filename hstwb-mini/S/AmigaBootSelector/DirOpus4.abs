@@ -1,16 +1,36 @@
-; update mountlist for systemdir device
-Execute S:UpdateMountlist [$SystemDirDevice]
+; Amiga Boot Selector - DirOpus4
+; -------------------------------
+; Author: Henrik Noerfjand Stengaard
+; Date:   2021-12-18
 
-; mount systemdir device [$SystemDirDevice]
-mount [$SystemDirDevice]
+IF EXISTS SYS:Applications/DirectoryOpus/DirectoryOpus
+  CD SYS:Applications/DirectoryOpus
+  DirectoryOpus
+  WaitForTask dopus_task 250 250
+  Skip end
+ENDIF
 
-; mount compact flash device
-mount CF0: from Devs:Mountlist-CF
+IF EXISTS SYS:Programs/DirOpus4/DirectoryOpus
+  Assign >NIL: EXISTS "DOPUS:"
+  IF WARN
+    Assign >NIL: DOPUS: SYS:Programs/DirOpus4
+    Assign >NIL: C: DOPUS:C ADD
+    Assign >NIL: Libs: DOPUS:Libs ADD
+  ENDIF
+  CD SYS:Programs/DirOpus4
+  If Exists InitLib
+    InitLib >NIL:
+  EndIf
+  DirectoryOpus
+  WaitForTask dopus_task 250 250
+  Skip end
+ENDIF
 
-; start directory opus in a new shell
-NewShell WINDOW "CON:0/0/640/300/Directory Opus 4/AUTO" FROM "SYS:Programs/DirOpus4/Start-DirOpus4"
- 
-; wait for directory opus to stop and reset
-WaitForTask dopus_task 250 250
+; error, not installed
+REQUESTCHOICE "Error" "Directory Opus is not installed!" "OK" >NIL:
+
+; end
+LAB end
+
 wait 1
 totalreset

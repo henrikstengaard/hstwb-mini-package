@@ -1,14 +1,6 @@
-; update mountlist
-Execute S:UpdateMountlist [$SystemDirDevice]
+; Amiga Boot Selector - Workbench
+; -------------------------------
+; Author: Henrik Noerfjand Stengaard
+; Date:   2021-11-25
 
-; mount and move system assigns to device [$SystemDirDevice]
-mount [$SystemDirDevice]
-movesys [$SystemDirDevice]
-
-; execute startup sequence, if it exists
-IF EXISTS S:Startup-Sequence
-  execute S:Startup-Sequence
-ELSE
-  echo "*e[1mError: Startup sequence doesn't exist!*e[0m"
-  quit 20
-ENDIF
+; empty to continue boot of startup sequence for workbench

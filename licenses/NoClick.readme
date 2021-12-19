@@ -1,0 +1,40 @@
+Short:        Multiplatform NoClick enabler
+Author:       Patrik Axelsson
+Uploader:     patrik bo gmail com
+Type:         disk/misc
+Version:      1.2
+Replaces:     disk/misc/NoClick.lha
+Architecture: m68k-amigaos >= 2.0.4; ppc-amigaos >= 4.0; ppc-morphos >= 1.4.5
+
+A very small and extremely simple utility for enabling the NoClick
+functionality in trackdisk.device V36+.
+
+This is definately not the first utility for enabling NoClick, but the unique
+feature of this one is that there are also native binaries available for both
+AmigaOS4 and MorphOS running on classic Amigas with PowerUP accelerators.
+
+I have also included the source code and makefile as it might help someone.
+
+NoClick takes no arguments and will enable NoClick by setting the TDPF_NOCLICK
+flag for all units (0-3).
+
+If running this utility does not silence the clicking of a drive, do not use
+it as it might cause mechanical damage to the drive.
+
+
+History:
+Version 1.2 (2019-03-16):
+- Now does a CreateIORequest() for every OpenDevice() to be more correct.
+- Decreased the executable sizes a respectable amount by not creating a
+  global pointer for the version string. This used to trigger the creation
+  of an additional data hunk just for the pointer.
+- Now using the compiler optimization level which gives the smallest
+  executable sizes.
+
+Version 1.1 (2016-04-12):
+- Use own startup code to decrease the executable sizes a bit.
+- Handle Workbench startup message to avoid unecessary crash if it for some
+  reason is given an icon and started from Workbench.
+
+Version 1.0 (2015-12-13):
+- Initial release.

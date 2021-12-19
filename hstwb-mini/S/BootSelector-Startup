@@ -1,0 +1,13 @@
+; Boot Selector Startup
+; ---------------------
+
+; Assign Startup
+IF EXISTS S:Assign-Startup
+  execute S:Assign-Startup
+ENDIF
+
+; Start Amiga Boot Selector
+C:abs
+IF EXISTS S:Boot.abs
+  execute S:Boot.abs
+ENDIF

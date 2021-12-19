@@ -1,0 +1,21 @@
+; Boot Patches Startup
+; --------------------
+
+; run noclick, if use noclick prefs exists
+IF EXISTS SYS:Prefs/HstWB/Use-NoClick
+  IF EXISTS C:noclick
+    C:noclick
+  ENDIF
+ENDIF
+
+; reduce buffers to mimimum
+Assign >NIL: EXISTS DF0:
+IF $RC EQ 0 VAL
+  C:AddBuffers >NIL: DF0: -999
+ENDIF
+C:AddBuffers >NIL: SYS: -999
+
+; run add21k, if use add21k prefs exists
+IF EXISTS SYS:Prefs/HstWB/Use-Add21k
+  C:add21k
+ENDIF

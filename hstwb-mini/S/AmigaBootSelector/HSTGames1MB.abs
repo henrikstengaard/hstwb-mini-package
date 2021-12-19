@@ -1,3 +1,4 @@
+; amiga boot selector hstgemos1mb
 IF EXISTS S:HSTLauncherMenu
   execute S:HSTLauncherMenu "HSTGames1MB"
 ELSE
